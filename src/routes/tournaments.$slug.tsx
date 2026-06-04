@@ -51,14 +51,15 @@ function TournamentDetail() {
   const register = useMutation({
     mutationFn: async (payload: { teamId?: string }) => {
       if (!user || !t) throw new Error("Not authenticated");
-      const row = {
+      const row: Record<string, unknown> = {
         tournament_id: t.id,
         registered_by: user.id,
-        status: "pending" as const,
-        payment_status: Number(t.entry_fee) > 0 ? ("pending" as const) : ("success" as const),
-        ...(payload.teamId ? { team_id: payload.teamId } : { user_id: user.id }),
+        status: "pending",
+        payment_status: Number(t.entry_fee) > 0 ? "pending" : "success",
       };
-      const { error } = await supabase.from("tournament_registrations").insert(row);
+      if (payload.teamId) row.team_id = payload.teamId;
+      else row.user_id = user.id;
+      const { error } = await supabase.from("tournament_registrations").insert(row as never);
       if (error) throw error;
     },
     onSuccess: () => {
