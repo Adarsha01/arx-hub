@@ -44,7 +44,7 @@ function ProfilePage() {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("profiles").update(form).eq("id", user!.id);
+      const { error } = await supabase.from("profiles").update(form as never).eq("id", user!.id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Profile saved"); qc.invalidateQueries({ queryKey: ["profile", user?.id] }); },
