@@ -9,6 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  adminSetTournamentStatus,
+  adminMarkNoShows,
+  adminPromoteWaitlist,
+  adminUpdateTournamentSchedule,
+} from "@/lib/tournaments.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/tournaments")({
   component: AdminTournaments,
@@ -17,6 +24,10 @@ export const Route = createFileRoute("/_authenticated/admin/tournaments")({
 function AdminTournaments() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const setStatusFn = useServerFn(adminSetTournamentStatus);
+  const markNoShowsFn = useServerFn(adminMarkNoShows);
+  const promoteWaitlistFn = useServerFn(adminPromoteWaitlist);
+  const updateScheduleFn = useServerFn(adminUpdateTournamentSchedule);
   const { data: list } = useQuery({
     queryKey: ["admin-tournaments"],
     queryFn: async () => {
@@ -53,11 +64,38 @@ function AdminTournaments() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase.from("tournaments").update({ status } as never).eq("id", id);
-      if (error) throw error;
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      setStatusFn({ data: { tournamentId: id, status: status as never } }),
+    onSuccess: () => { toast.success("Status updated"); qc.invalidateQueries({ queryKey: ["admin-tournaments"] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const noShowsMut = useMutation({
+    mutationFn: (id: string) => markNoShowsFn({ data: { tournamentId: id } }),
+    onSuccess: (r) => { toast.success(`Marked ${r.markedCount} no-shows`); qc.invalidateQueries({ queryKey: ["admin-tournaments"] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const promoteMut = useMutation({
+    mutationFn: (id: string) => promoteWaitlistFn({ data: { tournamentId: id } }),
+    onSuccess: (r) => {
+      toast.success(r.promotedRegistrationId ? "Promoted next on waitlist" : "Nothing to promote");
+      qc.invalidateQueries({ queryKey: ["admin-tournaments"] });
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-tournaments"] }),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const scheduleMut = useMutation({
+    mutationFn: (vars: { id: string; opens: string | null; closes: string | null }) =>
+      updateScheduleFn({
+        data: {
+          tournamentId: vars.id,
+          checkinOpensAt: vars.opens ? new Date(vars.opens).toISOString() : null,
+          checkinClosesAt: vars.closes ? new Date(vars.closes).toISOString() : null,
+        },
+      }),
+    onSuccess: () => { toast.success("Check-in window saved"); qc.invalidateQueries({ queryKey: ["admin-tournaments"] }); },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   return (
@@ -66,19 +104,47 @@ function AdminTournaments() {
         <h2 className="font-bold text-lg mb-4">Existing tournaments</h2>
         <ul className="space-y-2">
           {(list ?? []).map((t) => (
-            <li key={t.id} className="border border-border/40 rounded-lg p-3 flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <Link to="/tournaments/$slug" params={{ slug: t.slug }} className="font-medium truncate block hover:text-primary">{t.name}</Link>
-                <p className="text-xs text-muted-foreground">{t.mode} · ₹{Number(t.prize_pool).toLocaleString()} pool</p>
+            <li key={t.id} className="border border-border/40 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="min-w-0">
+                  <Link to="/tournaments/$slug" params={{ slug: t.slug }} className="font-medium truncate block hover:text-primary">{t.name}</Link>
+                  <p className="text-xs text-muted-foreground">{t.mode} · ₹{Number(t.prize_pool).toLocaleString()} pool</p>
+                </div>
+                <Select value={t.status} onValueChange={(v) => updateStatus.mutate({ id: t.id, status: v })}>
+                  <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["draft","scheduled","registration_open","registration_closed","checkin_open","checkin_closed","live","under_review","completed","cancelled"].map(s => (
+                      <SelectItem key={s} value={s}>{s.replace(/_/g," ")}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <Select value={t.status} onValueChange={(v) => updateStatus.mutate({ id: t.id, status: v })}>
-                <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {["draft","scheduled","registration_open","registration_closed","checkin_open","live","under_review","completed","cancelled"].map(s => (
-                    <SelectItem key={s} value={s}>{s.replace(/_/g," ")}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs">Check-in opens</Label>
+                  <Input
+                    type="datetime-local"
+                    defaultValue={t.checkin_opens_at ? toLocalInput(t.checkin_opens_at) : ""}
+                    onBlur={(e) => scheduleMut.mutate({ id: t.id, opens: e.target.value || null, closes: t.checkin_closes_at })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Check-in closes</Label>
+                  <Input
+                    type="datetime-local"
+                    defaultValue={t.checkin_closes_at ? toLocalInput(t.checkin_closes_at) : ""}
+                    onBlur={(e) => scheduleMut.mutate({ id: t.id, opens: t.checkin_opens_at, closes: e.target.value || null })}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <Button size="sm" variant="outline" onClick={() => promoteMut.mutate(t.id)} disabled={promoteMut.isPending}>
+                  Promote waitlist
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => noShowsMut.mutate(t.id)} disabled={noShowsMut.isPending}>
+                  Mark no-shows
+                </Button>
+              </div>
             </li>
           ))}
           {!list?.length && <p className="text-sm text-muted-foreground">No tournaments yet.</p>}
@@ -125,4 +191,10 @@ function AdminTournaments() {
       </form>
     </div>
   );
+}
+
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
