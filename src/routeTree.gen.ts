@@ -25,6 +25,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTeamsCreateRouteImport } from './routes/_authenticated/teams.create'
 import { Route as AuthenticatedAdminTournamentsRouteImport } from './routes/_authenticated/admin/tournaments'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
+import { Route as ApiPublicPaymentsWebhookProviderRouteImport } from './routes/api/public/payments.webhook.$provider'
 
 const TournamentsRoute = TournamentsRouteImport.update({
   id: '/tournaments',
@@ -109,6 +110,12 @@ const AuthenticatedAdminMatchesRoute =
     path: '/matches',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const ApiPublicPaymentsWebhookProviderRoute =
+  ApiPublicPaymentsWebhookProviderRouteImport.update({
+    id: '/api/public/payments/webhook/$provider',
+    path: '/api/public/payments/webhook/$provider',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
   '/_authenticated/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/admin/tournaments'
     | '/teams/create'
     | '/admin/'
+    | '/api/public/payments/webhook/$provider'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/admin/tournaments'
     | '/teams/create'
     | '/admin'
+    | '/api/public/payments/webhook/$provider'
   id:
     | '__root__'
     | '/'
@@ -214,6 +226,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/tournaments'
     | '/_authenticated/teams/create'
     | '/_authenticated/admin/'
+    | '/api/public/payments/webhook/$provider'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +236,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   TeamsRoute: typeof TeamsRouteWithChildren
   TournamentsRoute: typeof TournamentsRouteWithChildren
+  ApiPublicPaymentsWebhookProviderRoute: typeof ApiPublicPaymentsWebhookProviderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMatchesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/payments/webhook/$provider': {
+      id: '/api/public/payments/webhook/$provider'
+      path: '/api/public/payments/webhook/$provider'
+      fullPath: '/api/public/payments/webhook/$provider'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -408,7 +429,18 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   TeamsRoute: TeamsRouteWithChildren,
   TournamentsRoute: TournamentsRouteWithChildren,
+  ApiPublicPaymentsWebhookProviderRoute: ApiPublicPaymentsWebhookProviderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
