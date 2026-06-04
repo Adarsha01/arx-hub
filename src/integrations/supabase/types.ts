@@ -940,6 +940,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_match_credentials: {
+        Args: { _match_id: string }
+        Returns: {
+          room_id: string
+          room_password: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
