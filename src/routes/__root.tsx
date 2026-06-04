@@ -81,11 +81,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ARX Hub — Esports Tournaments" },
       { name: "description", content: "Compete in Free Fire and more on ARX Hub. Tournaments, teams, prizes." },
-      { property: "og:title", content: "ARX Hub" },
-      { property: "og:description", content: "Enterprise-grade esports tournament platform." },
+      { property: "og:title", content: "ARX Hub — Esports Tournaments" },
+      { property: "og:description", content: "Compete in Free Fire and more on ARX Hub. Tournaments, teams, prizes." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "ARX Hub — Esports Tournaments" },
+      { name: "twitter:description", content: "Compete in Free Fire and more on ARX Hub. Tournaments, teams, prizes." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9b5c0e3c-5dfc-4f85-95e0-8db5cbb092c2/id-preview-f9deb416--572ee5f7-49dc-4db8-bd11-e53464c92ee7.lovable.app-1780537589883.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9b5c0e3c-5dfc-4f85-95e0-8db5cbb092c2/id-preview-f9deb416--572ee5f7-49dc-4db8-bd11-e53464c92ee7.lovable.app-1780537589883.png" },
     ],
     links: [
       {
