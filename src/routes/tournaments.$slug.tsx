@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Trophy, Calendar, Users, Coins, Shield, CheckCircle2 } from "lucide-react";
 import { createTournamentOrder, confirmMockPayment, checkInRegistration } from "@/lib/payments.functions";
+import { getTournamentCapacity, joinWaitlist } from "@/lib/tournaments.functions";
 
 export const Route = createFileRoute("/tournaments/$slug")({
   head: ({ params }) => ({ meta: [{ title: `${params.slug} — ARX Hub` }] }),
@@ -22,6 +23,8 @@ function TournamentDetail() {
   const createOrder = useServerFn(createTournamentOrder);
   const confirmMock = useServerFn(confirmMockPayment);
   const checkIn = useServerFn(checkInRegistration);
+  const fetchCapacity = useServerFn(getTournamentCapacity);
+  const joinWaitlistFn = useServerFn(joinWaitlist);
 
   const { data: t, isLoading } = useQuery({
     queryKey: ["tournament", slug],
@@ -30,6 +33,12 @@ function TournamentDetail() {
       if (error) throw error;
       return data;
     },
+  });
+
+  const { data: capacity } = useQuery({
+    enabled: !!user && !!t,
+    queryKey: ["capacity", t?.id],
+    queryFn: () => fetchCapacity({ data: { tournamentId: t!.id } }),
   });
 
   const { data: registrations } = useQuery({
@@ -56,6 +65,11 @@ function TournamentDetail() {
   const register = useMutation({
     mutationFn: async (payload: { teamId?: string }) => {
       if (!user || !t) throw new Error("Not authenticated");
+      // If the tournament is full, route into waitlist instead of erroring.
+      if (capacity?.isFull) {
+        const res = await joinWaitlistFn({ data: { tournamentId: t.id, teamId: payload.teamId } });
+        return { status: "waitlisted" as const, position: res.waitlistPosition };
+      }
       const order = await createOrder({
         data: { tournamentId: t.id, teamId: payload.teamId },
       });
@@ -73,10 +87,13 @@ function TournamentDetail() {
     onSuccess: (res) => {
       if (res.status === "awaiting_payment") {
         toast.info("Razorpay checkout will open here when keys are configured.");
+      } else if (res.status === "waitlisted") {
+        toast.success(`Added to waitlist — position #${res.position ?? "?"}`);
       } else {
         toast.success("Registration confirmed!");
       }
       qc.invalidateQueries({ queryKey: ["registrations", t?.id] });
+      qc.invalidateQueries({ queryKey: ["capacity", t?.id] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -128,14 +145,20 @@ function TournamentDetail() {
                   className="bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold shadow-[var(--shadow-neon)]">
                   Sign in to register
                 </Button>
+              ) : capacity?.myRegistration?.status === "waitlisted" ? (
+                <div className="text-sm text-muted-foreground">
+                  You're on the waitlist — position <span className="font-bold text-primary">#{capacity.myRegistration.waitlist_position}</span>
+                </div>
               ) : isSolo ? (
                 <Button onClick={() => register.mutate({})} disabled={register.isPending}
                   className="bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold shadow-[var(--shadow-neon)]">
-                  Register solo
+                  {capacity?.isFull ? "Join waitlist" : "Register solo"}
                 </Button>
               ) : myTeams?.length ? (
                 <div className="flex flex-wrap gap-2 items-center">
-                  <span className="text-sm text-muted-foreground">Register with team:</span>
+                  <span className="text-sm text-muted-foreground">
+                    {capacity?.isFull ? "Join waitlist with team:" : "Register with team:"}
+                  </span>
                   {myTeams.map((tm) => (
                     <Button key={tm.id} variant="outline" onClick={() => register.mutate({ teamId: tm.id })} disabled={register.isPending}>
                       [{tm.tag}] {tm.name}
@@ -144,6 +167,12 @@ function TournamentDetail() {
                 </div>
               ) : (
                 <Button variant="outline" asChild><Link to="/teams/create">Create a team first</Link></Button>
+              )}
+              {capacity && (
+                <p className="basis-full text-xs text-muted-foreground">
+                  {capacity.activeCount}/{capacity.capacity} slots filled
+                  {capacity.waitlistCount > 0 && ` · ${capacity.waitlistCount} on waitlist`}
+                </p>
               )}
             </div>
           )}
