@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth-context";
 import { SiteShell } from "@/components/site/SiteShell";
-import { Shield, Trophy, Swords, LayoutDashboard } from "lucide-react";
+import { Shield, Trophy, Swords, LayoutDashboard, IndianRupee } from "lucide-react";
 import { assertAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -40,6 +40,7 @@ function AdminLayout() {
           <NavTab to="/admin" icon={LayoutDashboard}>Overview</NavTab>
           <NavTab to="/admin/tournaments" icon={Trophy}>Tournaments</NavTab>
           <NavTab to="/admin/matches" icon={Swords}>Matches</NavTab>
+          <NavTab to="/admin/finance" icon={IndianRupee}>Finance</NavTab>
         </nav>
         <Outlet />
       </div>
