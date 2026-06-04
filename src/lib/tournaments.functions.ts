@@ -192,7 +192,7 @@ export const adminUpdateTournamentSchedule = createServerFn({ method: "POST" })
       _action: "tournament.schedule_updated",
       _entity_type: "tournament",
       _entity_id: data.tournamentId,
-      _metadata: patch as Record<string, unknown>,
+      _metadata: patch as never,
     });
     return { ok: true };
   });
