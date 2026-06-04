@@ -1,8 +1,11 @@
 import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth-context";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Shield, Trophy, Swords, LayoutDashboard } from "lucide-react";
+import { assertAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
@@ -11,8 +14,20 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function AdminLayout() {
   const { isAdmin, loading } = useAuth();
   const nav = useNavigate();
-  useEffect(() => { if (!loading && !isAdmin) nav({ to: "/dashboard", replace: true }); }, [isAdmin, loading, nav]);
-  if (!isAdmin) return <SiteShell><div className="container mx-auto px-4 py-10">Checking permissions...</div></SiteShell>;
+  const verify = useServerFn(assertAdmin);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["admin-verify"],
+    queryFn: () => verify(),
+    retry: false,
+    staleTime: 60_000,
+  });
+  useEffect(() => {
+    if (!loading && !isAdmin) nav({ to: "/dashboard", replace: true });
+    if (isError) nav({ to: "/dashboard", replace: true });
+  }, [isAdmin, loading, isError, nav]);
+  if (isLoading || !data?.ok || !isAdmin) {
+    return <SiteShell><div className="container mx-auto px-4 py-10">Verifying permissions...</div></SiteShell>;
+  }
 
   return (
     <SiteShell>
