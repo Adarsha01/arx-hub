@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Trophy, Calendar, Users, Coins, Shield } from "lucide-react";
+import { Trophy, Calendar, Users, Coins, Shield, CheckCircle2 } from "lucide-react";
+import { createTournamentOrder, confirmMockPayment, checkInRegistration } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/tournaments/$slug")({
   head: ({ params }) => ({ meta: [{ title: `${params.slug} — ARX Hub` }] }),
@@ -17,6 +19,9 @@ function TournamentDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const createOrder = useServerFn(createTournamentOrder);
+  const confirmMock = useServerFn(confirmMockPayment);
+  const checkIn = useServerFn(checkInRegistration);
 
   const { data: t, isLoading } = useQuery({
     queryKey: ["tournament", slug],
@@ -51,19 +56,41 @@ function TournamentDetail() {
   const register = useMutation({
     mutationFn: async (payload: { teamId?: string }) => {
       if (!user || !t) throw new Error("Not authenticated");
-      const row: Record<string, unknown> = {
-        tournament_id: t.id,
-        registered_by: user.id,
-        status: "pending",
-        payment_status: Number(t.entry_fee) > 0 ? "pending" : "success",
-      };
-      if (payload.teamId) row.team_id = payload.teamId;
-      else row.user_id = user.id;
-      const { error } = await supabase.from("tournament_registrations").insert(row as never);
-      if (error) throw error;
+      const order = await createOrder({
+        data: { tournamentId: t.id, teamId: payload.teamId },
+      });
+      if (order.kind === "free") return { status: "free" as const };
+
+      // Paid flow. In mock mode (no Razorpay keys) auto-confirm so the
+      // end-to-end flow works without real credentials.
+      if (!order.live) {
+        await confirmMock({ data: { paymentId: order.paymentId } });
+        return { status: "mock_confirmed" as const };
+      }
+      // Live mode → real Razorpay checkout would mount here using order.providerOrderId.
+      return { status: "awaiting_payment" as const, ...order };
     },
+    onSuccess: (res) => {
+      if (res.status === "awaiting_payment") {
+        toast.info("Razorpay checkout will open here when keys are configured.");
+      } else {
+        toast.success("Registration confirmed!");
+      }
+      qc.invalidateQueries({ queryKey: ["registrations", t?.id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  // Find current user's registration for check-in CTA
+  const myReg = registrations?.find(
+    (r: { user_id?: string | null; registered_by?: string | null }) =>
+      user && (r.user_id === user.id || (r as { registered_by?: string }).registered_by === user.id),
+  ) as { id: string; status: string } | undefined;
+
+  const checkInMut = useMutation({
+    mutationFn: () => checkIn({ data: { registrationId: myReg!.id } }),
     onSuccess: () => {
-      toast.success("Registered! Awaiting confirmation.");
+      toast.success("Checked in!");
       qc.invalidateQueries({ queryKey: ["registrations", t?.id] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -118,6 +145,19 @@ function TournamentDetail() {
               ) : (
                 <Button variant="outline" asChild><Link to="/teams/create">Create a team first</Link></Button>
               )}
+            </div>
+          )}
+
+          {t.status === "checkin_open" && myReg && myReg.status !== "checked_in" && (
+            <div className="mt-6">
+              <Button
+                onClick={() => checkInMut.mutate()}
+                disabled={checkInMut.isPending}
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground"
+              >
+                <CheckCircle2 className="h-4 w-4 mr-1" />
+                {checkInMut.isPending ? "Checking in..." : "Check in"}
+              </Button>
             </div>
           )}
         </div>
