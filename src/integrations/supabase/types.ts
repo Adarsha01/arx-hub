@@ -1006,6 +1006,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_tournament_status: {
+        Args: {
+          _new_status: Database["public"]["Enums"]["tournament_status"]
+          _tournament_id: string
+        }
+        Returns: Database["public"]["Enums"]["tournament_status"]
+      }
       get_match_credentials: {
         Args: { _match_id: string }
         Returns: {
@@ -1034,6 +1041,11 @@ export type Database = {
           _metadata: Json
         }
         Returns: undefined
+      }
+      mark_no_shows: { Args: { _tournament_id: string }; Returns: number }
+      promote_from_waitlist: {
+        Args: { _tournament_id: string }
+        Returns: string
       }
     }
     Enums: {
