@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Trophy, Users, LayoutDashboard, Shield, LogOut } from "lucide-react";
+import { Gamepad2, LayoutDashboard, Shield, LogOut, Wallet } from "lucide-react";
 
 export function Header() {
   const { user, isAdmin, signOut } = useAuth();
@@ -38,6 +38,9 @@ export function Header() {
                   <Link to="/admin"><Shield className="h-4 w-4 mr-1" />Admin</Link>
                 </Button>
               )}
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/wallet"><Wallet className="h-4 w-4 mr-1" />Wallet</Link>
+              </Button>
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/dashboard"><LayoutDashboard className="h-4 w-4 mr-1" />Dashboard</Link>
               </Button>
