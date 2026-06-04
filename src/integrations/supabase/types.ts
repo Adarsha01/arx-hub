@@ -351,42 +351,57 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          idempotency_key: string | null
+          notes: string | null
           provider: string
           provider_order_id: string | null
           provider_payment_id: string | null
           provider_signature: string | null
+          registration_id: string | null
+          retry_count: number
           status: Database["public"]["Enums"]["payment_status"]
           tournament_id: string | null
           updated_at: string
           user_id: string
+          verified_at: string | null
         }
         Insert: {
           amount: number
           created_at?: string
           currency?: string
           id?: string
+          idempotency_key?: string | null
+          notes?: string | null
           provider?: string
           provider_order_id?: string | null
           provider_payment_id?: string | null
           provider_signature?: string | null
+          registration_id?: string | null
+          retry_count?: number
           status?: Database["public"]["Enums"]["payment_status"]
           tournament_id?: string | null
           updated_at?: string
           user_id: string
+          verified_at?: string | null
         }
         Update: {
           amount?: number
           created_at?: string
           currency?: string
           id?: string
+          idempotency_key?: string | null
+          notes?: string | null
           provider?: string
           provider_order_id?: string | null
           provider_payment_id?: string | null
           provider_signature?: string | null
+          registration_id?: string | null
+          retry_count?: number
           status?: Database["public"]["Enums"]["payment_status"]
           tournament_id?: string | null
           updated_at?: string
           user_id?: string
+          verified_at?: string | null
         }
         Relationships: [
           {
@@ -633,6 +648,42 @@ export type Database = {
           },
         ]
       }
+      tournament_escrow_entries: {
+        Row: {
+          amount: number
+          created_at: string
+          entry_type: string
+          id: string
+          notes: string | null
+          reference_id: string | null
+          team_id: string | null
+          tournament_id: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          entry_type: string
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          team_id?: string | null
+          tournament_id: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          entry_type?: string
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          team_id?: string | null
+          tournament_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       tournament_registrations: {
         Row: {
           checked_in_at: string | null
@@ -710,6 +761,8 @@ export type Database = {
       tournaments: {
         Row: {
           banner_url: string | null
+          checkin_closes_at: string | null
+          checkin_opens_at: string | null
           created_at: string
           created_by: string
           description: string | null
@@ -721,11 +774,14 @@ export type Database = {
           max_teams: number
           mode: Database["public"]["Enums"]["tournament_mode"]
           name: string
+          platform_fee_percent: number
+          prize_distributed_at: string | null
           prize_pool: number
           region: string | null
           registration_closes_at: string | null
           registration_opens_at: string | null
           rules: string | null
+          settlement_status: string
           slug: string
           starts_at: string | null
           status: Database["public"]["Enums"]["tournament_status"]
@@ -733,6 +789,8 @@ export type Database = {
         }
         Insert: {
           banner_url?: string | null
+          checkin_closes_at?: string | null
+          checkin_opens_at?: string | null
           created_at?: string
           created_by: string
           description?: string | null
@@ -744,11 +802,14 @@ export type Database = {
           max_teams?: number
           mode?: Database["public"]["Enums"]["tournament_mode"]
           name: string
+          platform_fee_percent?: number
+          prize_distributed_at?: string | null
           prize_pool?: number
           region?: string | null
           registration_closes_at?: string | null
           registration_opens_at?: string | null
           rules?: string | null
+          settlement_status?: string
           slug: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["tournament_status"]
@@ -756,6 +817,8 @@ export type Database = {
         }
         Update: {
           banner_url?: string | null
+          checkin_closes_at?: string | null
+          checkin_opens_at?: string | null
           created_at?: string
           created_by?: string
           description?: string | null
@@ -767,11 +830,14 @@ export type Database = {
           max_teams?: number
           mode?: Database["public"]["Enums"]["tournament_mode"]
           name?: string
+          platform_fee_percent?: number
+          prize_distributed_at?: string | null
           prize_pool?: number
           region?: string | null
           registration_closes_at?: string | null
           registration_opens_at?: string | null
           rules?: string | null
+          settlement_status?: string
           slug?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["tournament_status"]
@@ -947,6 +1013,11 @@ export type Database = {
           room_password: string
         }[]
       }
+      get_tournament_escrow: {
+        Args: { _tournament_id: string }
+        Returns: number
+      }
+      get_wallet_balance: { Args: { _user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -955,6 +1026,15 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      log_audit: {
+        Args: {
+          _action: string
+          _entity_id: string
+          _entity_type: string
+          _metadata: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:
@@ -1009,6 +1089,7 @@ export type Database = {
         | "processing"
         | "sent"
         | "rejected"
+        | "paid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1193,6 +1274,7 @@ export const Constants = {
         "processing",
         "sent",
         "rejected",
+        "paid",
       ],
     },
   },
