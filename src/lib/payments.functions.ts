@@ -153,7 +153,6 @@ export const confirmMockPayment = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { userId } = context;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { getPaymentProvider } = await import("@/lib/payments/index.server");
     const provider = getPaymentProvider("razorpay");
     if (provider.isLive()) {
