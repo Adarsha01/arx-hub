@@ -175,5 +175,4 @@
 @utility neon-border {
   border: 1px solid oklch(0.68 0.22 305 / 0.5);
   box-shadow: var(--shadow-neon);
-  }
 }
