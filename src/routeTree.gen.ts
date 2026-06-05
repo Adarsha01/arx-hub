@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminTournamentsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin/operations'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminFinanceRouteImport } from './routes/_authenticated/admin/finance'
+import { Route as AuthenticatedAdminDisputesIdRouteImport } from './routes/_authenticated/admin/disputes.$id'
 import { Route as ApiPublicPaymentsWebhookProviderRouteImport } from './routes/api/public/payments.webhook.$provider'
 
 const TournamentsRoute = TournamentsRouteImport.update({
@@ -149,6 +150,12 @@ const AuthenticatedAdminFinanceRoute =
     path: '/finance',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminDisputesIdRoute =
+  AuthenticatedAdminDisputesIdRouteImport.update({
+    id: '/disputes/$id',
+    path: '/disputes/$id',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const ApiPublicPaymentsWebhookProviderRoute =
   ApiPublicPaymentsWebhookProviderRouteImport.update({
     id: '/api/public/payments/webhook/$provider',
@@ -178,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/disputes/$id': typeof AuthenticatedAdminDisputesIdRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRoutesByTo {
@@ -201,6 +209,7 @@ export interface FileRoutesByTo {
   '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/disputes/$id': typeof AuthenticatedAdminDisputesIdRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRoutesById {
@@ -227,6 +236,7 @@ export interface FileRoutesById {
   '/_authenticated/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/_authenticated/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/disputes/$id': typeof AuthenticatedAdminDisputesIdRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRouteTypes {
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/matches/$id'
     | '/teams/create'
     | '/admin/'
+    | '/admin/disputes/$id'
     | '/api/public/payments/webhook/$provider'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/matches/$id'
     | '/teams/create'
     | '/admin'
+    | '/admin/disputes/$id'
     | '/api/public/payments/webhook/$provider'
   id:
     | '__root__'
@@ -301,6 +313,7 @@ export interface FileRouteTypes {
     | '/_authenticated/matches/$id'
     | '/_authenticated/teams/create'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/disputes/$id'
     | '/api/public/payments/webhook/$provider'
   fileRoutesById: FileRoutesById
 }
@@ -470,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFinanceRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/disputes/$id': {
+      id: '/_authenticated/admin/disputes/$id'
+      path: '/disputes/$id'
+      fullPath: '/admin/disputes/$id'
+      preLoaderRoute: typeof AuthenticatedAdminDisputesIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/api/public/payments/webhook/$provider': {
       id: '/api/public/payments/webhook/$provider'
       path: '/api/public/payments/webhook/$provider'
@@ -486,6 +506,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
   AuthenticatedAdminTournamentsRoute: typeof AuthenticatedAdminTournamentsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminDisputesIdRoute: typeof AuthenticatedAdminDisputesIdRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
@@ -495,6 +516,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
     AuthenticatedAdminTournamentsRoute: AuthenticatedAdminTournamentsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+    AuthenticatedAdminDisputesIdRoute: AuthenticatedAdminDisputesIdRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =
@@ -563,3 +585,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
