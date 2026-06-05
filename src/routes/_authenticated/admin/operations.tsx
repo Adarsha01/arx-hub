@@ -114,7 +114,7 @@ function CheckinPanel({ tournamentId }: { tournamentId: string }) {
           {(data?.registrations ?? []).map((r) => (
             <li key={r.id} className="py-2 flex justify-between gap-2">
               <span>
-                {r.teams ? `[${r.teams.tag}] ${r.teams.name}` : r.profiles?.display_name || r.profiles?.username || r.user_id}
+                {r.teams ? `[${r.teams.tag}] ${r.teams.name}` : (r.user_id ?? "—")}
               </span>
               <span className="text-xs text-muted-foreground">{r.status} · {r.payment_status}{r.waitlist_position ? ` · #${r.waitlist_position}` : ""}</span>
             </li>
