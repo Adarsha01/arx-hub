@@ -125,18 +125,9 @@ export const listMatchResults = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
       .from("match_results")
-      .select("id, match_id, team_id, user_id, placement, kills, points, screenshot_url, status, verified, submitted_by, confirmed_by, confirmed_at, evidence_count, created_at, teams(name, tag), profiles!match_results_user_id_fkey(username, display_name)" as never)
+      .select("id, match_id, team_id, user_id, placement, kills, points, screenshot_url, status, verified, submitted_by, confirmed_by, confirmed_at, evidence_count, created_at")
       .eq("match_id", data.matchId)
       .order("created_at", { ascending: false });
-    if (error) {
-      // fallback without joined profile (FK name may vary)
-      const { data: rows2, error: e2 } = await supabaseAdmin
-        .from("match_results")
-        .select("id, match_id, team_id, user_id, placement, kills, points, screenshot_url, status, verified, submitted_by, confirmed_by, confirmed_at, evidence_count, created_at")
-        .eq("match_id", data.matchId)
-        .order("created_at", { ascending: false });
-      if (e2) throw new Error(e2.message);
-      return { results: rows2 ?? [] };
-    }
+    if (error) throw new Error(error.message);
     return { results: rows ?? [] };
   });
