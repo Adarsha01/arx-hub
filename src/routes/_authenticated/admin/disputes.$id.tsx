@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { getDispute, postDisputeMessage, resolveDispute } from "@/lib/disputes.functions";
-import { getEvidenceUrls } from "@/lib/results.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/disputes/$id")({
   component: DisputeDetail,
