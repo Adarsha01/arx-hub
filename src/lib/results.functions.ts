@@ -26,7 +26,7 @@ export const submitMatchResult = createServerFn({ method: "POST" })
       _kills: data.kills,
       _points: data.points,
       _screenshot_url: data.screenshotUrl ?? null,
-    });
+    } as never);
     if (error) throw new Error(error.message);
     return { resultId: id as string };
   });
