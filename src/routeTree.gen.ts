@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTeamsCreateRouteImport } from './routes/_authenticated/teams.create'
 import { Route as AuthenticatedMatchesIdRouteImport } from './routes/_authenticated/matches.$id'
 import { Route as AuthenticatedAdminTournamentsRouteImport } from './routes/_authenticated/admin/tournaments'
+import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin/operations'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminFinanceRouteImport } from './routes/_authenticated/admin/finance'
 import { Route as ApiPublicPaymentsWebhookProviderRouteImport } from './routes/api/public/payments.webhook.$provider'
@@ -130,6 +131,12 @@ const AuthenticatedAdminTournamentsRoute =
     path: '/tournaments',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminOperationsRoute =
+  AuthenticatedAdminOperationsRouteImport.update({
+    id: '/operations',
+    path: '/operations',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminMatchesRoute =
   AuthenticatedAdminMatchesRouteImport.update({
     id: '/matches',
@@ -166,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$slug': typeof TournamentsSlugRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
   '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
@@ -188,6 +196,7 @@ export interface FileRoutesByTo {
   '/tournaments/$slug': typeof TournamentsSlugRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
   '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
@@ -213,6 +222,7 @@ export interface FileRoutesById {
   '/tournaments/$slug': typeof TournamentsSlugRoute
   '/_authenticated/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/_authenticated/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
   '/_authenticated/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/_authenticated/teams/create': typeof AuthenticatedTeamsCreateRoute
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/tournaments/$slug'
     | '/admin/finance'
     | '/admin/matches'
+    | '/admin/operations'
     | '/admin/tournaments'
     | '/matches/$id'
     | '/teams/create'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/tournaments/$slug'
     | '/admin/finance'
     | '/admin/matches'
+    | '/admin/operations'
     | '/admin/tournaments'
     | '/matches/$id'
     | '/teams/create'
@@ -284,6 +296,7 @@ export interface FileRouteTypes {
     | '/tournaments/$slug'
     | '/_authenticated/admin/finance'
     | '/_authenticated/admin/matches'
+    | '/_authenticated/admin/operations'
     | '/_authenticated/admin/tournaments'
     | '/_authenticated/matches/$id'
     | '/_authenticated/teams/create'
@@ -436,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTournamentsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/operations': {
+      id: '/_authenticated/admin/operations'
+      path: '/operations'
+      fullPath: '/admin/operations'
+      preLoaderRoute: typeof AuthenticatedAdminOperationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/matches': {
       id: '/_authenticated/admin/matches'
       path: '/matches'
@@ -463,6 +483,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminFinanceRoute: typeof AuthenticatedAdminFinanceRoute
   AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
+  AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
   AuthenticatedAdminTournamentsRoute: typeof AuthenticatedAdminTournamentsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -471,6 +492,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
   {
     AuthenticatedAdminFinanceRoute: AuthenticatedAdminFinanceRoute,
     AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
+    AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
     AuthenticatedAdminTournamentsRoute: AuthenticatedAdminTournamentsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
