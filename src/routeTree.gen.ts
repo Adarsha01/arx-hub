@@ -25,6 +25,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedTeamsCreateRouteImport } from './routes/_authenticated/teams.create'
+import { Route as AuthenticatedMatchesIdRouteImport } from './routes/_authenticated/matches.$id'
 import { Route as AuthenticatedAdminTournamentsRouteImport } from './routes/_authenticated/admin/tournaments'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminFinanceRouteImport } from './routes/_authenticated/admin/finance'
@@ -112,6 +113,11 @@ const AuthenticatedTeamsCreateRoute =
     path: '/teams/create',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMatchesIdRoute = AuthenticatedMatchesIdRouteImport.update({
+  id: '/matches/$id',
+  path: '/matches/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminTournamentsRoute =
   AuthenticatedAdminTournamentsRouteImport.update({
     id: '/tournaments',
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
+  '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
+  '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/_authenticated/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
+  '/_authenticated/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/_authenticated/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/admin/finance'
     | '/admin/matches'
     | '/admin/tournaments'
+    | '/matches/$id'
     | '/teams/create'
     | '/admin/'
     | '/api/public/payments/webhook/$provider'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/admin/finance'
     | '/admin/matches'
     | '/admin/tournaments'
+    | '/matches/$id'
     | '/teams/create'
     | '/admin'
     | '/api/public/payments/webhook/$provider'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/finance'
     | '/_authenticated/admin/matches'
     | '/_authenticated/admin/tournaments'
+    | '/_authenticated/matches/$id'
     | '/_authenticated/teams/create'
     | '/_authenticated/admin/'
     | '/api/public/payments/webhook/$provider'
@@ -391,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeamsCreateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/matches/$id': {
+      id: '/_authenticated/matches/$id'
+      path: '/matches/$id'
+      fullPath: '/matches/$id'
+      preLoaderRoute: typeof AuthenticatedMatchesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/tournaments': {
       id: '/_authenticated/admin/tournaments'
       path: '/tournaments'
@@ -449,6 +468,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedWithdrawalsRoute: typeof AuthenticatedWithdrawalsRoute
+  AuthenticatedMatchesIdRoute: typeof AuthenticatedMatchesIdRoute
   AuthenticatedTeamsCreateRoute: typeof AuthenticatedTeamsCreateRoute
 }
 
@@ -459,6 +479,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedWithdrawalsRoute: AuthenticatedWithdrawalsRoute,
+  AuthenticatedMatchesIdRoute: AuthenticatedMatchesIdRoute,
   AuthenticatedTeamsCreateRoute: AuthenticatedTeamsCreateRoute,
 }
 
@@ -499,3 +520,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
