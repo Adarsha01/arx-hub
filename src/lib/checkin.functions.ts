@@ -52,7 +52,7 @@ export const getCheckinMonitor = createServerFn({ method: "POST" })
 
     const { data: regs } = await supabaseAdmin
       .from("tournament_registrations")
-      .select("id, status, payment_status, user_id, team_id, checked_in_at, dq_reason, waitlist_position, teams(name, tag), profiles(username, display_name)")
+      .select("id, status, payment_status, user_id, team_id, checked_in_at, dq_reason, waitlist_position, teams(name, tag)")
       .eq("tournament_id", data.tournamentId)
       .order("status");
     return { registrations: regs ?? [] };
