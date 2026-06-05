@@ -21,13 +21,17 @@ import { Route as AuthenticatedWithdrawalsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedDisputesRouteImport } from './routes/_authenticated/disputes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedTeamsCreateRouteImport } from './routes/_authenticated/teams.create'
+import { Route as AuthenticatedMatchesIdRouteImport } from './routes/_authenticated/matches.$id'
 import { Route as AuthenticatedAdminTournamentsRouteImport } from './routes/_authenticated/admin/tournaments'
+import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin/operations'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminFinanceRouteImport } from './routes/_authenticated/admin/finance'
+import { Route as AuthenticatedAdminDisputesIdRouteImport } from './routes/_authenticated/admin/disputes.$id'
 import { Route as ApiPublicPaymentsWebhookProviderRouteImport } from './routes/api/public/payments.webhook.$provider'
 
 const TournamentsRoute = TournamentsRouteImport.update({
@@ -91,6 +95,11 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDisputesRoute = AuthenticatedDisputesRouteImport.update({
+  id: '/disputes',
+  path: '/disputes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -112,10 +121,21 @@ const AuthenticatedTeamsCreateRoute =
     path: '/teams/create',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMatchesIdRoute = AuthenticatedMatchesIdRouteImport.update({
+  id: '/matches/$id',
+  path: '/matches/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminTournamentsRoute =
   AuthenticatedAdminTournamentsRouteImport.update({
     id: '/tournaments',
     path: '/tournaments',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminOperationsRoute =
+  AuthenticatedAdminOperationsRouteImport.update({
+    id: '/operations',
+    path: '/operations',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminMatchesRoute =
@@ -128,6 +148,12 @@ const AuthenticatedAdminFinanceRoute =
   AuthenticatedAdminFinanceRouteImport.update({
     id: '/finance',
     path: '/finance',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminDisputesIdRoute =
+  AuthenticatedAdminDisputesIdRouteImport.update({
+    id: '/disputes/$id',
+    path: '/disputes/$id',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const ApiPublicPaymentsWebhookProviderRoute =
@@ -145,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsRouteWithChildren
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/disputes': typeof AuthenticatedDisputesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
@@ -153,9 +180,12 @@ export interface FileRoutesByFullPath {
   '/tournaments/$slug': typeof TournamentsSlugRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
+  '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/disputes/$id': typeof AuthenticatedAdminDisputesIdRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRoutesByTo {
@@ -165,6 +195,7 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/disputes': typeof AuthenticatedDisputesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
@@ -173,9 +204,12 @@ export interface FileRoutesByTo {
   '/tournaments/$slug': typeof TournamentsSlugRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
+  '/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/disputes/$id': typeof AuthenticatedAdminDisputesIdRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRoutesById {
@@ -188,6 +222,7 @@ export interface FileRoutesById {
   '/tournaments': typeof TournamentsRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/disputes': typeof AuthenticatedDisputesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
@@ -196,9 +231,12 @@ export interface FileRoutesById {
   '/tournaments/$slug': typeof TournamentsSlugRoute
   '/_authenticated/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/_authenticated/admin/tournaments': typeof AuthenticatedAdminTournamentsRoute
+  '/_authenticated/matches/$id': typeof AuthenticatedMatchesIdRoute
   '/_authenticated/teams/create': typeof AuthenticatedTeamsCreateRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/disputes/$id': typeof AuthenticatedAdminDisputesIdRoute
   '/api/public/payments/webhook/$provider': typeof ApiPublicPaymentsWebhookProviderRoute
 }
 export interface FileRouteTypes {
@@ -211,6 +249,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/admin'
     | '/dashboard'
+    | '/disputes'
     | '/notifications'
     | '/profile'
     | '/wallet'
@@ -219,9 +258,12 @@ export interface FileRouteTypes {
     | '/tournaments/$slug'
     | '/admin/finance'
     | '/admin/matches'
+    | '/admin/operations'
     | '/admin/tournaments'
+    | '/matches/$id'
     | '/teams/create'
     | '/admin/'
+    | '/admin/disputes/$id'
     | '/api/public/payments/webhook/$provider'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -231,6 +273,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tournaments'
     | '/dashboard'
+    | '/disputes'
     | '/notifications'
     | '/profile'
     | '/wallet'
@@ -239,9 +282,12 @@ export interface FileRouteTypes {
     | '/tournaments/$slug'
     | '/admin/finance'
     | '/admin/matches'
+    | '/admin/operations'
     | '/admin/tournaments'
+    | '/matches/$id'
     | '/teams/create'
     | '/admin'
+    | '/admin/disputes/$id'
     | '/api/public/payments/webhook/$provider'
   id:
     | '__root__'
@@ -253,6 +299,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/disputes'
     | '/_authenticated/notifications'
     | '/_authenticated/profile'
     | '/_authenticated/wallet'
@@ -261,9 +308,12 @@ export interface FileRouteTypes {
     | '/tournaments/$slug'
     | '/_authenticated/admin/finance'
     | '/_authenticated/admin/matches'
+    | '/_authenticated/admin/operations'
     | '/_authenticated/admin/tournaments'
+    | '/_authenticated/matches/$id'
     | '/_authenticated/teams/create'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/disputes/$id'
     | '/api/public/payments/webhook/$provider'
   fileRoutesById: FileRoutesById
 }
@@ -363,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/disputes': {
+      id: '/_authenticated/disputes'
+      path: '/disputes'
+      fullPath: '/disputes'
+      preLoaderRoute: typeof AuthenticatedDisputesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -391,11 +448,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeamsCreateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/matches/$id': {
+      id: '/_authenticated/matches/$id'
+      path: '/matches/$id'
+      fullPath: '/matches/$id'
+      preLoaderRoute: typeof AuthenticatedMatchesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/tournaments': {
       id: '/_authenticated/admin/tournaments'
       path: '/tournaments'
       fullPath: '/admin/tournaments'
       preLoaderRoute: typeof AuthenticatedAdminTournamentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/operations': {
+      id: '/_authenticated/admin/operations'
+      path: '/operations'
+      fullPath: '/admin/operations'
+      preLoaderRoute: typeof AuthenticatedAdminOperationsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/matches': {
@@ -412,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFinanceRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/disputes/$id': {
+      id: '/_authenticated/admin/disputes/$id'
+      path: '/disputes/$id'
+      fullPath: '/admin/disputes/$id'
+      preLoaderRoute: typeof AuthenticatedAdminDisputesIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/api/public/payments/webhook/$provider': {
       id: '/api/public/payments/webhook/$provider'
       path: '/api/public/payments/webhook/$provider'
@@ -425,16 +503,20 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminFinanceRoute: typeof AuthenticatedAdminFinanceRoute
   AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
+  AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
   AuthenticatedAdminTournamentsRoute: typeof AuthenticatedAdminTournamentsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminDisputesIdRoute: typeof AuthenticatedAdminDisputesIdRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminFinanceRoute: AuthenticatedAdminFinanceRoute,
     AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
+    AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
     AuthenticatedAdminTournamentsRoute: AuthenticatedAdminTournamentsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+    AuthenticatedAdminDisputesIdRoute: AuthenticatedAdminDisputesIdRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =
@@ -445,20 +527,24 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDisputesRoute: typeof AuthenticatedDisputesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedWithdrawalsRoute: typeof AuthenticatedWithdrawalsRoute
+  AuthenticatedMatchesIdRoute: typeof AuthenticatedMatchesIdRoute
   AuthenticatedTeamsCreateRoute: typeof AuthenticatedTeamsCreateRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDisputesRoute: AuthenticatedDisputesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedWithdrawalsRoute: AuthenticatedWithdrawalsRoute,
+  AuthenticatedMatchesIdRoute: AuthenticatedMatchesIdRoute,
   AuthenticatedTeamsCreateRoute: AuthenticatedTeamsCreateRoute,
 }
 
