@@ -7,8 +7,9 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Trophy, Calendar, Users, Coins, Shield, CheckCircle2 } from "lucide-react";
-import { createTournamentOrder, confirmMockPayment, checkInRegistration } from "@/lib/payments.functions";
+import { createTournamentOrder, confirmMockPayment } from "@/lib/payments.functions";
 import { getTournamentCapacity, joinWaitlist } from "@/lib/tournaments.functions";
+import { checkInSelfOrTeam } from "@/lib/checkin.functions";
 
 export const Route = createFileRoute("/tournaments/$slug")({
   head: ({ params }) => ({ meta: [{ title: `${params.slug} — ARX Hub` }] }),
@@ -22,7 +23,7 @@ function TournamentDetail() {
   const qc = useQueryClient();
   const createOrder = useServerFn(createTournamentOrder);
   const confirmMock = useServerFn(confirmMockPayment);
-  const checkIn = useServerFn(checkInRegistration);
+  const checkIn = useServerFn(checkInSelfOrTeam);
   const fetchCapacity = useServerFn(getTournamentCapacity);
   const joinWaitlistFn = useServerFn(joinWaitlist);
 
@@ -105,7 +106,7 @@ function TournamentDetail() {
   ) as { id: string; status: string } | undefined;
 
   const checkInMut = useMutation({
-    mutationFn: () => checkIn({ data: { registrationId: myReg!.id } }),
+    mutationFn: () => checkIn({ data: { tournamentId: t!.id } }),
     onSuccess: () => {
       toast.success("Checked in!");
       qc.invalidateQueries({ queryKey: ["registrations", t?.id] });
