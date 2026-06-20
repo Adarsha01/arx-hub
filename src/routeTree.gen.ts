@@ -23,6 +23,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDisputesRouteImport } from './routes/_authenticated/disputes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedTeamsCreateRouteImport } from './routes/_authenticated/teams.create'
@@ -31,6 +32,7 @@ import { Route as AuthenticatedAdminTournamentsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin/operations'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminFinanceRouteImport } from './routes/_authenticated/admin/finance'
+import { Route as AuthenticatedAdminAdminsRouteImport } from './routes/_authenticated/admin/admins'
 import { Route as AuthenticatedAdminDisputesIdRouteImport } from './routes/_authenticated/admin/disputes.$id'
 import { Route as ApiPublicPaymentsWebhookProviderRouteImport } from './routes/api/public/payments.webhook.$provider'
 
@@ -105,6 +107,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChangePasswordRoute =
+  AuthenticatedChangePasswordRouteImport.update({
+    id: '/change-password',
+    path: '/change-password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -150,6 +158,12 @@ const AuthenticatedAdminFinanceRoute =
     path: '/finance',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminsRoute =
+  AuthenticatedAdminAdminsRouteImport.update({
+    id: '/admins',
+    path: '/admins',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminDisputesIdRoute =
   AuthenticatedAdminDisputesIdRouteImport.update({
     id: '/disputes/$id',
@@ -170,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -178,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/withdrawals': typeof AuthenticatedWithdrawalsRoute
   '/teams/$id': typeof TeamsIdRoute
   '/tournaments/$slug': typeof TournamentsSlugRoute
+  '/admin/admins': typeof AuthenticatedAdminAdminsRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
@@ -194,6 +210,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -202,6 +219,7 @@ export interface FileRoutesByTo {
   '/withdrawals': typeof AuthenticatedWithdrawalsRoute
   '/teams/$id': typeof TeamsIdRoute
   '/tournaments/$slug': typeof TournamentsSlugRoute
+  '/admin/admins': typeof AuthenticatedAdminAdminsRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
@@ -221,6 +239,7 @@ export interface FileRoutesById {
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/disputes': typeof AuthenticatedDisputesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -229,6 +248,7 @@ export interface FileRoutesById {
   '/_authenticated/withdrawals': typeof AuthenticatedWithdrawalsRoute
   '/teams/$id': typeof TeamsIdRoute
   '/tournaments/$slug': typeof TournamentsSlugRoute
+  '/_authenticated/admin/admins': typeof AuthenticatedAdminAdminsRoute
   '/_authenticated/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
@@ -248,6 +268,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tournaments'
     | '/admin'
+    | '/change-password'
     | '/dashboard'
     | '/disputes'
     | '/notifications'
@@ -256,6 +277,7 @@ export interface FileRouteTypes {
     | '/withdrawals'
     | '/teams/$id'
     | '/tournaments/$slug'
+    | '/admin/admins'
     | '/admin/finance'
     | '/admin/matches'
     | '/admin/operations'
@@ -272,6 +294,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/teams'
     | '/tournaments'
+    | '/change-password'
     | '/dashboard'
     | '/disputes'
     | '/notifications'
@@ -280,6 +303,7 @@ export interface FileRouteTypes {
     | '/withdrawals'
     | '/teams/$id'
     | '/tournaments/$slug'
+    | '/admin/admins'
     | '/admin/finance'
     | '/admin/matches'
     | '/admin/operations'
@@ -298,6 +322,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tournaments'
     | '/_authenticated/admin'
+    | '/_authenticated/change-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/disputes'
     | '/_authenticated/notifications'
@@ -306,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/withdrawals'
     | '/teams/$id'
     | '/tournaments/$slug'
+    | '/_authenticated/admin/admins'
     | '/_authenticated/admin/finance'
     | '/_authenticated/admin/matches'
     | '/_authenticated/admin/operations'
@@ -427,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/change-password': {
+      id: '/_authenticated/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -483,6 +516,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFinanceRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/admins': {
+      id: '/_authenticated/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AuthenticatedAdminAdminsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/disputes/$id': {
       id: '/_authenticated/admin/disputes/$id'
       path: '/disputes/$id'
@@ -501,6 +541,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAdminsRoute: typeof AuthenticatedAdminAdminsRoute
   AuthenticatedAdminFinanceRoute: typeof AuthenticatedAdminFinanceRoute
   AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
   AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
@@ -511,6 +552,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminAdminsRoute: AuthenticatedAdminAdminsRoute,
     AuthenticatedAdminFinanceRoute: AuthenticatedAdminFinanceRoute,
     AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
     AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
@@ -526,6 +568,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDisputesRoute: typeof AuthenticatedDisputesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -538,6 +581,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDisputesRoute: AuthenticatedDisputesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
