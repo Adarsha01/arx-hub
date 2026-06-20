@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { completePasswordChange, getMyAccountFlags } from "@/lib/account.functions";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_authenticated/change-password")({
   component: ChangePassword,
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/change-password")({
 
 function ChangePassword() {
   const nav = useNavigate();
+  const { refreshProfile } = useAuth();
   const fetchFlags = useServerFn(getMyAccountFlags);
   const change = useServerFn(completePasswordChange);
   const [pw, setPw] = useState("");
@@ -26,8 +28,9 @@ function ChangePassword() {
 
   const mut = useMutation({
     mutationFn: () => change({ data: { newPassword: pw } }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Password updated");
+      await refreshProfile();
       nav({ to: "/dashboard", replace: true });
     },
     onError: (e: Error) => toast.error(e.message),
