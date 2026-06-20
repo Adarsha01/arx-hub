@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { regenerateMatchCredentials } from "@/lib/credentials.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/matches")({
   component: AdminMatches,
@@ -34,6 +36,14 @@ function AdminMatches() {
   });
 
   const [form, setForm] = useState({ round: "1", match_number: "1", scheduled_at: "", room_id: "", room_password: "" });
+
+  const regen = useServerFn(regenerateMatchCredentials);
+  const regenMut = useMutation({
+    mutationFn: (args: { matchId: string; roomId: string; roomPassword: string }) =>
+      regen({ data: args }),
+    onSuccess: () => { toast.success("Credentials updated"); qc.invalidateQueries({ queryKey: ["matches", selected] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const create = useMutation({
     mutationFn: async () => {
@@ -80,6 +90,7 @@ function AdminMatches() {
                     {(m.room_id || m.room_password) && (
                       <p className="text-xs mt-1 font-mono">Room: {m.room_id ?? "—"} · Pass: {m.room_password ?? "—"}</p>
                     )}
+                    <RegenInline matchId={m.id} onSubmit={(rid, rpw) => regenMut.mutate({ matchId: m.id, roomId: rid, roomPassword: rpw })} disabled={regenMut.isPending} />
                   </li>
                 ))}
               </ul>
@@ -99,6 +110,27 @@ function AdminMatches() {
               {create.isPending ? "Creating..." : "Create"}
             </Button>
           </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RegenInline({ matchId, onSubmit, disabled }: { matchId: string; onSubmit: (rid: string, rpw: string) => void; disabled: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [rid, setRid] = useState("");
+  const [rpw, setRpw] = useState("");
+  return (
+    <div className="mt-2">
+      {!open ? (
+        <Button size="sm" variant="outline" onClick={() => setOpen(true)}>Regenerate credentials</Button>
+      ) : (
+        <div className="flex flex-wrap gap-2 items-end pt-2 border-t border-border/40">
+          <div className="flex-1 min-w-[120px]"><Label>Room ID</Label><Input value={rid} onChange={(e) => setRid(e.target.value)} /></div>
+          <div className="flex-1 min-w-[120px]"><Label>Password</Label><Input value={rpw} onChange={(e) => setRpw(e.target.value)} /></div>
+          <Button size="sm" disabled={disabled || !rid || !rpw} onClick={() => { onSubmit(rid, rpw); setOpen(false); setRid(""); setRpw(""); }}>Save</Button>
+          <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+          <input type="hidden" value={matchId} />
         </div>
       )}
     </div>
