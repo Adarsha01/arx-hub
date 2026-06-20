@@ -547,8 +547,10 @@ export type Database = {
           ign: string | null
           instagram_handle: string | null
           kills: number
+          last_login_at: string | null
           losses: number
           matches_played: number
+          must_change_password: boolean
           mvp_count: number
           phone: string | null
           region: string | null
@@ -572,8 +574,10 @@ export type Database = {
           ign?: string | null
           instagram_handle?: string | null
           kills?: number
+          last_login_at?: string | null
           losses?: number
           matches_played?: number
+          must_change_password?: boolean
           mvp_count?: number
           phone?: string | null
           region?: string | null
@@ -597,8 +601,10 @@ export type Database = {
           ign?: string | null
           instagram_handle?: string | null
           kills?: number
+          last_login_at?: string | null
           losses?: number
           matches_played?: number
+          must_change_password?: boolean
           mvp_count?: number
           phone?: string | null
           region?: string | null
@@ -1010,20 +1016,29 @@ export type Database = {
       user_roles: {
         Row: {
           created_at: string
+          granted_at: string
+          granted_by: string | null
           id: string
           role: Database["public"]["Enums"]["app_role"]
+          status: Database["public"]["Enums"]["role_status"]
           user_id: string
         }
         Insert: {
           created_at?: string
+          granted_at?: string
+          granted_by?: string | null
           id?: string
           role: Database["public"]["Enums"]["app_role"]
+          status?: Database["public"]["Enums"]["role_status"]
           user_id: string
         }
         Update: {
           created_at?: string
+          granted_at?: string
+          granted_by?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          status?: Database["public"]["Enums"]["role_status"]
           user_id?: string
         }
         Relationships: []
@@ -1214,6 +1229,10 @@ export type Database = {
         Args: { _tournament_id: string }
         Returns: string
       }
+      regenerate_match_credentials: {
+        Args: { _match_id: string; _room_id: string; _room_password: string }
+        Returns: undefined
+      }
       resolve_dispute: {
         Args: {
           _dispute_id: string
@@ -1275,6 +1294,7 @@ export type Database = {
         | "no_show"
         | "disqualified"
         | "cancelled"
+      role_status: "active" | "suspended"
       tournament_mode: "solo" | "duo" | "squad" | "clan"
       tournament_status:
         | "draft"
@@ -1465,6 +1485,7 @@ export const Constants = {
         "disqualified",
         "cancelled",
       ],
+      role_status: ["active", "suspended"],
       tournament_mode: ["solo", "duo", "squad", "clan"],
       tournament_status: [
         "draft",
