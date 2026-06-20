@@ -18,6 +18,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   mustChangePassword: boolean;
+  refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -86,6 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isSuperAdmin,
         mustChangePassword,
+        refreshProfile: async () => {
+          if (session?.user) await loadProfileAndRoles(session.user.id);
+        },
         signOut: async () => {
           await supabase.auth.signOut();
         },
