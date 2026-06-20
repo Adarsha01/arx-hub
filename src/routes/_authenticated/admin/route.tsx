@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth-context";
 import { SiteShell } from "@/components/site/SiteShell";
-import { Shield, Trophy, Swords, LayoutDashboard, IndianRupee, Activity } from "lucide-react";
+import { Shield, Trophy, Swords, LayoutDashboard, IndianRupee, Activity, Users } from "lucide-react";
 import { assertAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 function AdminLayout() {
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, isSuperAdmin, loading } = useAuth();
   const nav = useNavigate();
   const verify = useServerFn(assertAdmin);
   const { data, isLoading, isError } = useQuery({
@@ -42,6 +42,7 @@ function AdminLayout() {
           <NavTab to="/admin/matches" icon={Swords}>Matches</NavTab>
           <NavTab to="/admin/operations" icon={Activity}>Operations</NavTab>
           <NavTab to="/admin/finance" icon={IndianRupee}>Finance</NavTab>
+          {isSuperAdmin && <NavTab to="/admin/admins" icon={Users}>Admins</NavTab>}
         </nav>
         <Outlet />
       </div>
