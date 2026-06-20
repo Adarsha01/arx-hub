@@ -23,6 +23,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDisputesRouteImport } from './routes/_authenticated/disputes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedTeamsCreateRouteImport } from './routes/_authenticated/teams.create'
@@ -105,6 +106,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChangePasswordRoute =
+  AuthenticatedChangePasswordRouteImport.update({
+    id: '/change-password',
+    path: '/change-password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -194,6 +202,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -221,6 +230,7 @@ export interface FileRoutesById {
   '/teams': typeof TeamsRouteWithChildren
   '/tournaments': typeof TournamentsRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/disputes': typeof AuthenticatedDisputesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tournaments'
     | '/admin'
+    | '/change-password'
     | '/dashboard'
     | '/disputes'
     | '/notifications'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/teams'
     | '/tournaments'
+    | '/change-password'
     | '/dashboard'
     | '/disputes'
     | '/notifications'
@@ -298,6 +310,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tournaments'
     | '/_authenticated/admin'
+    | '/_authenticated/change-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/disputes'
     | '/_authenticated/notifications'
@@ -427,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/change-password': {
+      id: '/_authenticated/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -526,6 +546,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDisputesRoute: typeof AuthenticatedDisputesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -538,6 +559,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDisputesRoute: AuthenticatedDisputesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
