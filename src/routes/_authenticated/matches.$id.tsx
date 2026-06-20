@@ -19,6 +19,8 @@ import {
   listMatchResults,
 } from "@/lib/results.functions";
 import { uploadEvidenceFile } from "@/lib/evidence-upload";
+import { getMatchCredentials } from "@/lib/credentials.functions";
+import { Lock, KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/matches/$id")({
   component: MatchDetail,
@@ -55,6 +57,13 @@ function MatchDetail() {
   const { data: results } = useQuery({
     queryKey: ["match-results", id],
     queryFn: () => listResults({ data: { matchId: id } }),
+  });
+
+  const fetchCreds = useServerFn(getMatchCredentials);
+  const { data: creds } = useQuery({
+    queryKey: ["match-credentials", id],
+    queryFn: () => fetchCreds({ data: { matchId: id } }),
+    refetchInterval: 30_000,
   });
 
   const [form, setForm] = useState({ teamId: "", placement: "1", kills: "0", points: "0" });
@@ -96,6 +105,35 @@ function MatchDetail() {
         <p className="text-sm text-muted-foreground mt-1">
           {match?.scheduled_at ? new Date(match.scheduled_at).toLocaleString() : "Schedule TBD"} · Status: {match?.status}
         </p>
+      </div>
+
+      <div className="glass-card rounded-2xl p-6">
+        <div className="flex items-center gap-2 mb-3">
+          <KeyRound className="h-4 w-4 text-primary" />
+          <h2 className="font-bold">Room credentials</h2>
+        </div>
+        {creds?.unlocked ? (
+          <div className="grid sm:grid-cols-2 gap-3 text-sm">
+            <div className="rounded-lg border border-border/40 p-3">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Room ID</p>
+              <p className="font-mono text-base mt-1 break-all">{creds.roomId}</p>
+            </div>
+            <div className="rounded-lg border border-border/40 p-3">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Password</p>
+              <p className="font-mono text-base mt-1 break-all">{creds.roomPassword}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-start gap-3 rounded-lg border border-dashed border-border/60 p-4 text-sm">
+            <Lock className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <div>
+              <p className="font-semibold">🔒 Match Credentials Locked</p>
+              <p className="text-muted-foreground mt-1">
+                Complete tournament check-in to unlock room details.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <form
